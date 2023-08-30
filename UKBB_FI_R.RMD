@@ -1,0 +1,78 @@
+---
+title: "Recreating UKBB FI in R"
+author: "Ruth CE Bowyer"
+date: "2023-08-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 0. About
+
+Converting the Stata script provided by Williams et al., to generate an FI in UKBB
+
+Differences are highlighted below but in brief:
+
+## 1. Data
+
+
+```{r}
+
+
+
+```
+
+## 2. Select variables and clean
+
+n_eid  		-- participant identifier
+n_31_0* 	-- Sex
+n_34_* 		-- Year of birth
+n_52_* 		-- Month of birth
+n_21003_0*  -- Age when attended assessment centre
+n_21000* 	-- Ethnicity
+n_1200_0* 	-- Sleeplessness / insomnia
+n_6148_0* 	-- Eye problems / disorders
+n_2227_0*  	-- Other eye problems
+n_2020_0* 	-- Loneliness / isolation
+n_2247_0* 	-- Hearing difficulties
+n_2188_0* 	-- Long-standing illness, disability or infirmity
+n_2178_0* 	-- Overall self-rated health
+n_2296_0* 	-- Falls in last year
+n_2316_0* 	-- Chest wheeze or whistling
+n_2080_0* 	-- Tiredness / Lethargy
+n_6150_0* 	-- Vascular problems	
+n_20002_0* 	-- Non-cancer illness codes (all array variables are necessary to keep)
+n_6149_0* 	-- Mouth / dental problems
+n_2335_0* 	-- Chest pain
+n_2443_0* 	-- Diabetes
+n_2453_0* 	-- Cancer diagnosis
+n_134_0* 	-- Number of self-reported cancers
+n_2463_0* 	-- fractured/broken bones
+n_6152_0*	-- Multiple medical conditions reported - e.g. DVT, asthma, eczema
+n_3786_0*	-- Age of asthma diagnosis
+n_2473_0* 	-- Other serious medical conditions reported
+n_2050_0*  	-- Depressed moods
+n_1970_0* 	-- Nervous feelings
+n_1930_0* 	-- Miserableness
+n_6159_0* 	-- Pain in last month
+n_136_0* 	-- Number of operations
+n_6177_0* 	-- Medications used for cholesterol, blood pressure or diabetes (male)
+n_6153_0* 	-- Medications used for cholesterol, blood pressure or diabetes (female)
+n_137_0* 	-- Number of medications used
+
+n_40007_* 	-- Age at death for deceased participants
+
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Generate FI
+
+# MICE 
+
+https://www.r-bloggers.com/2016/06/handling-missing-data-with-mice-package-a-simple-approach/
