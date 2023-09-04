@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
+rm(list=ls())
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -15,16 +16,25 @@ Converting the Stata script provided by Williams et al., to generate an FI in UK
 
 Differences are highlighted below but in brief:
 
+
+This script was run mostly via CREATE
+
 ## 1. Data
 
 
 ```{r}
 
+load("~/max2ruth/incom.Robj")
 
+## NA those who withdrew 
+x<-read.csv("~/max2ruth/w90865_2023-04-25.csv",h=F)
+w<-which(incom$f.eid%in%x$V1) # n = 2
+
+incom[w,2:ncol(incom)]<-NA
 
 ```
 
-## 2. Select variables and clean
+## 2. Select variables
 
 n_eid  		-- participant identifier
 n_31_0* 	-- Sex
@@ -60,13 +70,23 @@ n_6159_0* 	-- Pain in last month
 n_136_0* 	-- Number of operations
 n_6177_0* 	-- Medications used for cholesterol, blood pressure or diabetes (male)
 n_6153_0* 	-- Medications used for cholesterol, blood pressure or diabetes (female)
+
+
+Missing - 40007 n_40007_* 	-- Age at death for deceased participants 
 n_137_0* 	-- Number of medications used
 
-n_40007_* 	-- Age at death for deceased participants
 
+```{r select df}
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+df.a <- data.frame(eid = incom$f.eid, 
+                   sex = incom$f.31.0.0,
+                   meds_chol.bp.diabetes = incom$f.61)]
+
+```
+
+## Clean datasets 
+
+```{r}
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
