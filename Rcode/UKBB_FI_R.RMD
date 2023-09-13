@@ -19,13 +19,83 @@ Differences are highlighted below but in brief:
 
 This script was run mostly via CREATE
 
-## 1. Data
-
-
 ```{r}
 
-load("~/max2ruth/incom.Robj")
+library(dplyr)
 
+```
+
+## 1. Data
+
+Varaibles to select as per William's et al.,:
+
+Variables required from UKB data (these represent data field numbers, along with the Stata prefix for each variable 
+	('s_' or 'n_' for string or numeric vars, respectively):
+n_eid  		-- participant identifier x
+n_31_0* 	-- Sex x
+n_34_* 		-- Year of birth x
+n_52_* 		-- Month of birth x
+n_21003_0*  -- Age when attended assessment centre x
+n_21000* 	-- Ethnicity x
+n_1200_0* 	-- Sleeplessness / insomnia x
+n_6148_0* 	-- Eye problems / disorders x
+n_2227_0*  	-- Other eye problems x
+n_2020_0* 	-- Loneliness / isolation x
+n_2247_0* 	-- Hearing difficulties x
+n_2188_0* 	-- Long-standing illness, disability or infirmity x
+n_2178_0* 	-- Overall self-rated health x
+n_2296_0* 	-- Falls in last year x
+n_2316_0* 	-- Chest wheeze or whistling x
+n_2080_0* 	-- Tiredness / Lethargy x
+n_6150_0* 	-- Vascular problems	x
+n_20002_0* 	-- Non-cancer illness codes (all array variables are necessary to keep) x
+n_6149_0* 	-- Mouth / dental problems x 
+n_2335_0* 	-- Chest pain x
+n_2443_0* 	-- Diabetes x
+n_2453_0* 	-- Cancer diagnosis x
+n_134_0* 	-- Number of self-reported cancers x
+n_2463_0* 	-- fractured/broken bones x
+n_6152_0*	-- Multiple medical conditions reported - e.g. DVT, asthma, eczema x
+n_3786_0*	-- Age of asthma diagnosis x
+n_2473_0* 	-- Other serious medical conditions reported x
+n_2050_0*  	-- Depressed moods x
+n_1970_0* 	-- Nervous feelings x
+n_1930_0* 	-- Miserableness x
+n_6159_0* 	-- Pain in last month x
+n_136_0* 	-- Number of operations x
+
+n_6177_0* 	-- Medications used for cholesterol, blood pressure or diabetes (male)
+n_6153_0* 	-- Medications used for cholesterol, blood pressure or diabetes (female)
+n_137_0* 	-- Number of medications used
+
+n_40007_* 	-- Age at death for deceased participants
+
+```{r eval=FALSE, include=T}
+
+#df.a derived as follows: 
+
+load("~/max2ruth2/bd671644_recoded.Robj")
+
+df.a <- bd %>% select("f.eid", "f.31.0.0", "f.34.0.0", "f.52.0.0",
+                      "f.21003.0.0":"f.21003.3.0", "f.21000.0.0":"f.21000.3.0",
+                      "f.1200.0.0":"f.1200.3.0", "f.6148.0.0":"f.6148.3.4", 
+                      "f.2227.0.0":"f.2227.3.0", "f.2020.0.0":"f.2020.3.0",
+                      "f.2188.0.0":"f.2188.3.0", "f.2178.0.0":"f.2178.3.0",
+                      "f.2296.0.0":"f.2296.3.0", "f.2316.0.0":"f.2316.3.0",
+                      "f.2080.0.0":"f.2080.3.0", "f.6150.0.0":"f.6150.2.3",
+                      "f.20002.0.0":"f.20002.3.33", "f.6149.0.0":"f.6149.3.5",
+                      "f.2335.0.0":"f.2335.3.0", "f.2443.0.0":"f.2443.3.0",
+                      "f.2453.0.0":"f.2453.3.0", "f.134.0.0":"f.134.3.0",
+                      "f.2463.0.0":"f.2463.3.0", "f.6145.0.0":"f.6145.3.2",
+                      "f.3786.0.0":"f.3786.3.0", "f.2473.0.0":"f.2473.3.0", "f.2050.0.0":"f.2050.3.0",
+                      "f.1970.0.0":"f.1970.3.0", "f.1930.0.0":"f.1930.3.0", "f.6159.0.0":"f.6159.3.6",
+                      "f.136.0.0":"f.136.3.0", "f.6177.0.0":"f.6177.3.2", "f.6153.0.0":"f.6153.3.3",
+                      "f.137.0.0":"f.137.3.0", "f.40007.0.0":"f.40007.1.0")
+
+write.csv(df.a,"/users/k1511199/UKBB_multimorbidity/UKBB.df.a.csv", row.names=F)
+```
+
+```{r}
 ## NA those who withdrew 
 x<-read.csv("~/max2ruth/w90865_2023-04-25.csv",h=F)
 w<-which(incom$f.eid%in%x$V1) # n = 2
@@ -34,55 +104,6 @@ incom[w,2:ncol(incom)]<-NA
 
 ```
 
-## 2. Select variables
-
-n_eid  		-- participant identifier
-n_31_0* 	-- Sex
-n_34_* 		-- Year of birth
-n_52_* 		-- Month of birth
-n_21003_0*  -- Age when attended assessment centre
-n_21000* 	-- Ethnicity
-n_1200_0* 	-- Sleeplessness / insomnia
-n_6148_0* 	-- Eye problems / disorders
-n_2227_0*  	-- Other eye problems
-n_2020_0* 	-- Loneliness / isolation
-n_2247_0* 	-- Hearing difficulties
-n_2188_0* 	-- Long-standing illness, disability or infirmity
-n_2178_0* 	-- Overall self-rated health
-n_2296_0* 	-- Falls in last year
-n_2316_0* 	-- Chest wheeze or whistling
-n_2080_0* 	-- Tiredness / Lethargy
-n_6150_0* 	-- Vascular problems	
-n_20002_0* 	-- Non-cancer illness codes (all array variables are necessary to keep)
-n_6149_0* 	-- Mouth / dental problems
-n_2335_0* 	-- Chest pain
-n_2443_0* 	-- Diabetes
-n_2453_0* 	-- Cancer diagnosis
-n_134_0* 	-- Number of self-reported cancers
-n_2463_0* 	-- fractured/broken bones
-n_6152_0*	-- Multiple medical conditions reported - e.g. DVT, asthma, eczema
-n_3786_0*	-- Age of asthma diagnosis
-n_2473_0* 	-- Other serious medical conditions reported
-n_2050_0*  	-- Depressed moods
-n_1970_0* 	-- Nervous feelings
-n_1930_0* 	-- Miserableness
-n_6159_0* 	-- Pain in last month
-n_136_0* 	-- Number of operations
-n_6177_0* 	-- Medications used for cholesterol, blood pressure or diabetes (male)
-n_6153_0* 	-- Medications used for cholesterol, blood pressure or diabetes (female)
-
-
-Missing - 40007 n_40007_* 	-- Age at death for deceased participants 
-n_137_0* 	-- Number of medications used
-
-
-```{r select df}
-
-df.a <- data.frame(eid = incom$f.eid, 
-                   sex = incom$f.31.0.0,
-                   meds_chol.bp.diabetes = incom$f.61)]
-
-```
 
 ## Clean datasets 
 
