@@ -27,7 +27,7 @@ library(dplyr)
 
 ## 1. Data
 
-Varaibles to select as per William's et al.,:
+Variables to select as per William's et al.,:
 
 Variables required from UKB data (these represent data field numbers, along with the Stata prefix for each variable 
 	('s_' or 'n_' for string or numeric vars, respectively):
@@ -71,7 +71,7 @@ n_137_0* 	-- Number of medications used
 n_40007_* 	-- Age at death for deceased participants
 
 ```{r eval=FALSE, include=T}
-
+# This chunk ran for set up and then just loaded as below for subsequent iterations
 #df.a derived as follows: 
 
 load("~/max2ruth2/bd671644_recoded.Robj")
@@ -93,21 +93,108 @@ df.a <- bd %>% select("f.eid", "f.31.0.0", "f.34.0.0", "f.52.0.0",
                       "f.137.0.0":"f.137.3.0", "f.40007.0.0":"f.40007.1.0")
 
 write.csv(df.a,"/users/k1511199/UKBB_multimorbidity/UKBB.df.a.csv", row.names=F)
+
+rename.df <- names(df.a)
+
 ```
 
+Many of the array vals seem to be completely missing NA 
+
 ```{r}
+
+df.a <- read.csv("/users/k1511199/UKBB_multimorbidity/UKBB.df.a.csv")
 ## NA those who withdrew 
 x<-read.csv("~/max2ruth/w90865_2023-04-25.csv",h=F)
-w<-which(incom$f.eid%in%x$V1) # n = 2
 
-incom[w,2:ncol(incom)]<-NA
+df.a <- df.a[-which(df.a$f.eid%in%x$V1),]
 
+## set row names as study id for sense checking
+
+row.names(df.a) <- paste0("id",df.a$f.eid)
 ```
 
 
-## Clean datasets 
+## 2. Write functions 
+
+
+```{r recode function}
+
+#Function to search within a range of cols for a text variable and recode as 1 - returns a vector of the var 
+text_recode <- function(var1, #first var in range
+                        var2 = NULL, #second var in range
+                        text, #Text to search in array and recode to NA
+                        NAvals, ...){ #Text to recode, sep multiple with |
+  var1 = var1
+  var2 = var2
+  text = text
+  df.b <- df.a %>% select(var1:var2)
+  
+  #Codes any mention of morb as 1, and if no 1s and all responses arent NA, returns 0
+  var <- apply(df.b,1, function(b){
+    v <- ifelse(any(grepl(text, b)), 1, 
+           ifelse(all(grepl(NAvals, b)|is.na(b)), NA, 0))})
+  return(var)}
+```
+  
+#here get the below function working
+```{r}
+num_recode <- function(var1, #first var in range
+                        var2 = NULL, #second var in range
+                        code){ #Code for morb 
+  var1 = var1
+  var2 = var2
+  code = code
+  df.b <- df.a %>% select(var1:var2)
+  
+  # Codes any mention of morb as 1, and if no 1s and all responses arent NA, returns 0
+  var <- apply(as.data.frame(df.b), 1, function(b){
+    b <- as.numeric(b)
+    v <- ifelse(any(b == code), 1, 
+           ifelse(all(is.na(b)), NA, 0))
+    })
+  return(var)}
+
+
+```
+
+## 3. Clean datasets 
+
+
+### 3a. Glaucoma
+
+- Within f.6148* - text var
+- is code 1277 in 20002 
+- Recode do not know and pref not to answer to NA 
+
+Questions from og methodology: 
+
+Var 2227 is other eye problems (answers no, prefer to not answer, yes) -- seems to be using this first but i am not sure why? As other eye problems could be diff to? (Not included for now)
+
+I will recode pref not to answer and don't know to NA as in the og -- but im not sure this is correct given the MICE? (and some don't knows could be recoded to 0)
+
+'	* recoding 6148 'do not know' respondents to 0 if they were interviewed and still had no record of glaucoma:
+replace i1_glaucoma = 0 if i1_!=1 & n_20002_0_0!=. & n_6148_0_0==-1 '
+
+I'm not sure what variable is meant by this or the variable i1 - which i think is to do with interviewing but I can't see a corresponding var in the html, or which variable this relates to 
+
+99999 in 20002 -- unclassifable so I don't think coding as NA is appropiate but discuss
+https://biobank.ndph.ox.ac.uk/showcase/coding.cgi?id=6
+
+
 
 ```{r}
+
+glauc_t <- text_recode(var1= "f.6148.0.0", #first var in range
+                        var2 = "f.6148.3.4",#second var in range
+                        text = "Glaucoma", #Text to search in array and recode to NA
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
+
+
+glauc_n <- num_recode(var1= "f.20002.0.0", #first var in range
+                        var2 = "f.20002.3.33",#second var in range
+                        code=1277, #Text to search in array and recode to NA
+                        NAvals = NA)
+table(glauc_n, useNA="ifany")
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
