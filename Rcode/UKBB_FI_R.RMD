@@ -134,10 +134,8 @@ text_recode <- function(var1, #first var in range
     v <- ifelse(any(grepl(text, b)), 1, 
            ifelse(all(grepl(NAvals, b)|is.na(b)), NA, 0))})
   return(var)}
-```
-  
-#here get the below function working
-```{r}
+
+
 num_recode <- function(var1, #first var in range
                         var2 = NULL, #second var in range
                         code){ #Code for morb 
@@ -146,12 +144,15 @@ num_recode <- function(var1, #first var in range
   code = code
   df.b <- df.a %>% select(var1:var2)
   
-  # Codes any mention of morb as 1, and if no 1s and all responses arent NA, returns 0
-  var <- apply(as.data.frame(df.b), 1, function(b){
+  #NAs really preventing the ifelse from running for reasons unable to work out, so adding here a workaround (unclear to me why ifelse(all(is.na(b))) is not working!)
+
+  df.b[is.na(df.b)] <- -11111111
+  var <- apply(as.data.frame(df.b),1,function(b){
     b <- as.numeric(b)
-    v <- ifelse(any(b == code), 1, 
-           ifelse(all(is.na(b)), NA, 0))
-    })
+    ifelse(all(b==-11111111), NA, 
+               ifelse(any(b==code),1,0))
+  })
+  
   return(var)}
 
 
@@ -180,6 +181,7 @@ I'm not sure what variable is meant by this or the variable i1 - which i think i
 99999 in 20002 -- unclassifable so I don't think coding as NA is appropiate but discuss
 https://biobank.ndph.ox.ac.uk/showcase/coding.cgi?id=6
 
+Where all responses in 20002 is NA - the fnc codes as NA(but could be 0 if the NAs are responses vs not being asked)
 
 
 ```{r}
@@ -189,12 +191,18 @@ glauc_t <- text_recode(var1= "f.6148.0.0", #first var in range
                         text = "Glaucoma", #Text to search in array and recode to NA
                         NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
+table(glauc_t, useNA="ifany")
 
 glauc_n <- num_recode(var1= "f.20002.0.0", #first var in range
                         var2 = "f.20002.3.33",#second var in range
-                        code=1277, #Text to search in array and recode to NA
-                        NAvals = NA)
+                        code=1277) #Text to search in array and recode to NA)
 table(glauc_n, useNA="ifany")
+
+
+glauc <- ifelse(glauc_n==1|glauc_t==1,1,
+                ifelse(glauc_n==0|glauc_t==0,0,NA))
+
+table(glauc, useNA="ifany")
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
