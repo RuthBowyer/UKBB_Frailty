@@ -205,18 +205,18 @@ Where all responses in 20002 is NA - the fnc codes as NA(but could be 0 if the N
 
 ```{r message = F, warning=F}
 
-glauc_t <- text_recode(var1= "f.6148.0.0", #first var in range
+glaucoma_t <- text_recode(var1= "f.6148.0.0", #first var in range
                         var2 = "f.6148.3.4",#second var in range
                         text = "Glaucoma", #Text to search in array and recode to 1
                         NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
-table(glauc_t, useNA="ifany")
+table(glaucoma_t, useNA="ifany")
 
-glauc_n <- num_recode(var1= "f.20002.0.0", #first var in range
+glaucoma_n <- num_recode(var1= "f.20002.0.0", #first var in range
                         var2 = "f.20002.3.33",#second var in range
                         code=1277) #Text to search in array and recode to NA)
-table(glauc_n, useNA="ifany")
 
+table(glaucoma_n, useNA="ifany")
 
 #This Q for no other eye problems
 noeyeprobs <- text_recode0only(var1="f.2227.0.0",
@@ -224,10 +224,10 @@ noeyeprobs <- text_recode0only(var1="f.2227.0.0",
                                text="No")
 
 
-glauc <- ifelse(glauc_n==1|glauc_t==1,1, #This condition first
-                ifelse(glauc_n==0|glauc_t==0|noeyeprobs==0,0,NA))
+glaucoma <- ifelse(glaucoma_n==1|glaucoma_t==1,1, #This condition first
+                ifelse(glaucoma_n==0|glaucoma_t==0|noeyeprobs==0,0,NA))
 
-table(glauc, useNA="ifany")
+table(glaucoma, useNA="ifany")
 ```
 
 ### 3.2 Cataracts
@@ -567,57 +567,88 @@ table(RA, useNA="ifany")
 ```
 		
 ### 3.14 Osteoarthritis 
+
 disease code 1465 in field 20002
-
-gen i14_osteoarth = 0
-replace i14 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i14 = 1 if n_20002_0_`n'==1465
-}
 
 ```{r}
 
-
-RA_n <- num_recode(var1= "f.20002.0.0", #first var in range
-                        var2 = "f.20002.3.33",#second var in range
-                        code=1464) #Text to search in array and recode to NA)
-table(RA_n, useNA="ifany")
+osteoarthritis_n <- num_recode(var1= "f.20002.0.0", var2 = "f.20002.3.33",
+                        code=1465) #Text to search in array and recode to NA)
+table(osteoarthritis_n, useNA="ifany")
 
 
-RA <- ifelse(RA_n==1, 1, #This condition first
-                ifelse(RA_n==0|noothercond==0,0,NA))
+osteoarthritis <- ifelse(osteoarthritis_n==1, 1, #This condition first
+                ifelse(osteoarthritis_n==0|noothercond==0,0,NA))
 
-table(RA, useNA="ifany")
+table(osteoarthritis, useNA="ifany")
 
 
 ```
 
-* 15 - Gout - disease code 1466 in field 20002
+### 3.15 Gout 
 
-gen i15_gout = 0
-replace i15 =. if n_2473_0_0==-3
+disease code 1466 in field 20002
 
-forvalues n =  0(1)28 {
-replace i15 = 1 if n_20002_0_`n'==1466
-}
+```{r}
+
+gout_n <- num_recode(var1= "f.20002.0.0", var2 = "f.20002.3.33",
+                        code=1466) #Text to search in array and recode to NA)
+table(gout_n, useNA="ifany")
 
 
+gout <- ifelse(gout_n==1, 1, #This condition first
+                ifelse(gout_n==0|noothercond==0,0,NA))
 
-* 16 - Dental problems
+table(gout, useNA="ifany")
+
+
+```
+
+
+### 3.16 Dental problems
 
 gen i16_dental = 0 if n_6149_0_0==-7
 replace i16 = 1 if n_6149_0_0!=-7 & n_6149_0_0!=-3 & n_6149_0_0!=.
 
+**Q** - could remove dentured and toothache potentially from this but 
+keep for now
+
+```{r}
+
+dental.problems_t <- text_recode(var1= "f.6149.0.0", var2 = "f.6149.3.5",
+                        text = "Bleeding gums|Dentures|Loose teeth|Mouth ulcers|Painful gums|Toothache", #Text to search in array and recode to 1
+                        NAvals = "Prefer not to answer") 
+
+table(dental.problems_t, useNA="ifany")
+
+dental.problems <- ifelse(dental.problems_t==-99999, NA, dental.problems_t)
+table(dental.problems, useNA="ifany")
 
 
-* 17 - Chest pain
+```
 
-gen i17_chest_pain = 0 if n_2335==0
-replace i17= 1 if  n_2335==1
+
+### 3.17 Chest pain
+
+Deviating from DW to code 'Do not know' as 0
+
+```{r}
+chest.pain_t <- text_recode(var1= "f.2335.0.0", var2 = "f.2335.3.0",
+                        text = "Yes",
+                        NAvals = "Prefer not to answer") 
+
+table(chest.pain_t, useNA="ifany")
+
+chest.pain <- ifelse(chest.pain_t==-99999, NA, chest.pain_t)
+table(chest.pain, useNA="ifany")
+
+
+
+```
   
 
-* 18 - Sciatica - disease code 1476 in field 20002 
+### 3.18 - Sciatica 
+disease code 1476 in field 20002 
 
 gen i18_sciatica = 0
 replace i18 =. if n_2473_0_0==-3
@@ -626,6 +657,18 @@ forvalues n =  0(1)28 {
 replace i18 = 1 if n_20002_0_`n'==1476
 }
 
+```{r}
+
+sciatica_n <- num_recode(var1= "f.20002.0.0", #first var in range
+                        var2 = "f.20002.3.33",#second var in range
+                        code=1476) #Text to search in array and recode to NA)
+table(sciatica_n, useNA="ifany")
+
+sciatica <- ifelse(sciatica_n==1, 1, #This condition first
+                ifelse(sciatica_n==0|noothercond==0,0,NA))
+
+table(sciatica, useNA="ifany")
+```
 
 * 19 - Diabetes
 
