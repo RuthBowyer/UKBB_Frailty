@@ -651,13 +651,6 @@ table(chest.pain, useNA="ifany")
 ### 3.18 Sciatica 
 disease code 1476 in field 20002 
 
-gen i18_sciatica = 0
-replace i18 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i18 = 1 if n_20002_0_`n'==1476
-}
-
 ```{r}
 
 sciatica_n <- num_recode(var1= "f.20002.0.0", #first var in range
@@ -928,29 +921,20 @@ table(anxiousness, useNA="ifany")
 
 ### 3.30 Severe anxiety 
 
-gen i30_severe_anxiety = 0
-replace i30 =. if n_2473_0_0==-3
 
-forvalues n =  0(1)28 {
-replace i30 = 1 if n_20002_0_`n'==1287
-}
 
 ```{r}
-
-severe.anxiety_t <- text_recode(var1= "f.2473.0.0", var2 = "f.2473.3.0",
-                        text = "Yes", NAvals = "Prefer not to answer") 
-
-table(severe.anxiety_t, useNA="ifany")
-
 
 severe.anxiety_n <- num_recode(var1= "f.20002.0.0", var2 = "f.20002.3.33",
                         code=1111)
 table(severe.anxiety_n, useNA="ifany")
 
-severe.anxiety <- ifelse(severe.anxiety_n==1|severe.anxiety_t==1,1, #This condition first
-                ifelse(severe.anxiety_n==0|severe.anxiety_t==0,0,NA))
+
+severe.anxiety <- ifelse(severe.anxiety_n==1, 1, #This condition first
+                ifelse(severe.anxiety_n==0|noothercond==0,0,NA))
 
 table(severe.anxiety, useNA="ifany")
+
 
 ```
 
@@ -1089,96 +1073,75 @@ high.cholesterol_t2 <- text_recode(var1= "f.6177.0.0", var2 = "f.6177.3.2",
 
 table(high.cholesterol_t2, useNA="ifany")
 
-high.cholesterol <- ifelse(high.cholesterol_t1==1|h==-99999, NA)
+high.cholesterol <- ifelse(high.cholesterol_t1==1|high.cholesterol_t2==1, 1,
+                           ifelse(high.cholesterol_t1==0|high.cholesterol_t2==0,0,NA))
+                     
 table(high.cholesterol, useNA="ifany")
 
 
 ```
 
-* 42 - Pneumonia - code 1398 in 20002
+### 3.42 - 3.49 Other conditions 
+
+All same coding (and as same as other above but easier to keep track this way):
+ 
+* 42 Pneumonia - code 1398 in 20002
+* 43 Gastric reflux - code 1138 in 20002
+* 44 Hiatus hernia - code 1474 in 20002
+* 45 diverticulitis - code 1458 in 20002
+* 46 Gall stones - code 1162 in 20002
+* 47 Psoriasis - code 1453 in 20002
+* 48 Osteoporosis - code 1309 in 20002
+* 49 Migraine - code 1265 in 20002 
 
 
-gen i42_pneumonia = 0
-replace i42 =. if n_2473_0_0==-3
+```{r}
 
-forvalues n =  0(1)28 {
-replace i42 = 1 if n_20002_0_`n'==1398
-}
+codes <- c(1398, 1138, 1474, 1458, 1162, 1453, 1309, 1265)
 
+other.conds.L <- lapply(codes, function(i){
 
-* 43 - Gastric reflux - code 1138 in 20002
+      var_n <- num_recode(var1= "f.20002.0.0", var2 = "f.20002.3.33",
+                        code=i)
+  
+      var <- ifelse(var_n==1, 1, #This condition first
+                ifelse(var_n==0|noothercond==0,0,NA))})
 
-gen i43_gastric_reflux = 0
-replace i43 =. if n_2473_0_0==-3
+names(other.conds.L) <- c("pneumonia", "gastric.reflux", "hiatus.hernia",
+                          "diverticulitis", "gall.stones", "psoriasis",
+                          "osteoporosis", "migrane")
 
-forvalues n =  0(1)28 {
-replace i43 = 1 if n_20002_0_`n'==1138
-}
+lapply(other.conds.L, function(x){table(x, useNA="ifany")})
 
+list2env(other.conds.L, .GlobalEnv)
 
-* 44 - Hiatus hernia - code 1474 in 20002
+```
+## Generate FI
 
-gen i44_hernia = 0
-replace i44 =. if n_2473_0_0==-3
+### Combine domains 
 
-forvalues n =  0(1)28 {
-replace i44 = 1 if n_20002_0_`n'==1474
-}
+#here finsh
+```{r}
 
+FI.domains <- data.frame(id=df.a$f.eid, D1.glaucoma=glaucoma,
+                         D2.cataracts=cataracts, D3.hearing=hearing,
+                         D4.infirmity=infirmity, D5.self.rated.health=SRH,
+                         D6.falls=falls, D7.wheeze=wheeze,
+                         D8.fatigue=fatigue, D9.MI=MI, D10.angina=angina,
+                         D11.stroke=stroke, D12.HBP=HBP, D13.RA=RA,
+                         D14.osteoarthritis=osteoarthritis, D15.gout=gout,
+                         D16.dental.probelms=dental.problems,
+                         D17.chest.pain=chest.pain, D18.sciatica=sciatica,
+                         D19.diabetes=diabetes, D20.cancer=cancer,
+                         D21.cancer.multi=cancer.multi, 
+                         D22.fractures=fractures, D23.DVT=dvt,
+                         D24.emphysema=emphysema, D25.asthma=asthma,
+                         D26.hypothyroidism=hypothyroidsi
+                        )
 
-* 45 - diverticulitis - code 1458 in 20002
+```
 
-
-gen i45_diverticulitis = 0
-replace i45 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i45 = 1 if n_20002_0_`n'==1458
-}
-
-
-* 46 - Gall stones - code 1162 in 20002
-
-gen i46_gall_stones = 0
-replace i46 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i46 = 1 if n_20002_0_`n'==1162
-}
-
-
-* 47 - Psoriasis - code 1453 in 20002
-
-gen i47_psoriasis = 0
-replace i47 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i47 = 1 if n_20002_0_`n'==1453
-}
-
-
-* 48 - Osteoporosis - code 1309 in 20002
-
-gen i48_osteoporosis = 0
-replace i48 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i48 = 1 if n_20002_0_`n'==1309
-}
-
-
-* 49 - Migraine - code 1265 in 20002 
-
-gen i49_migraine = 0
-replace i49 =. if n_2473_0_0==-3
-
-forvalues n =  0(1)28 {
-replace i49 = 1 if n_20002_0_`n'==1265
-}
-
-
-
-************************************
+```{r}
 
 * Deriving FI - sum up items, divide by 49, and multiply by 100 (to display as percentages) or 10 (for results displayed by 10% increases)
 
@@ -1568,7 +1531,7 @@ twoway (histogram fi_average if n_31==0, bin(20)  percent color(gs13)) ///
 	   
 
 
-# Generate FI
+
 
 # MICE 
 
