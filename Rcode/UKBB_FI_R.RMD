@@ -220,7 +220,7 @@ Deviation from DW method - for this var if answer is Do not know, coding as 0 (a
 cataracts_t <- text_recode(var1= "f.6148.0.0", #first var in range
                         var2 = "f.6148.3.4",#second var in range
                         text = "Cataract", #Text to search in array and recode to 1
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(cataracts_t, useNA="ifany")
 
@@ -251,7 +251,7 @@ Deviating from DW if responded 'Do not know' coded as 0
 hearing_t <-  text_recode(var1= "f.2247.0.0", #first var in range
                         var2 = "f.2247.3.0",#second var in range
                         text = "Yes", 
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(hearing_t, useNA="ifany")
 
@@ -266,7 +266,7 @@ Coding as in 3c
 infirmity_t <-  text_recode(var1= "f.2188.0.0", #first var in range
                         var2 = "f.2188.3.0",#second var in range
                         text = "Yes", 
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(infirmity_t, useNA="ifany")
 
@@ -320,7 +320,7 @@ replace i6_falls = 1 if n_2296==3
   text0 = "No falls"
   text0.5 = "Only one fall"
   text1= "More than one fall"
-  NAvals = "Prefer not to answer"
+  NAvals = "Prefer not to answer|Do not know"
   
   df.b <- df.a %>% select(var1:var2)
   
@@ -403,7 +403,7 @@ table(fatigue, useNA="ifany")
 MI_t <- text_recode(var1= "f.6150.0.0", #first var in range
                         var2 = "f.6150.2.3",#second var in range
                         text = "Heart attack", #Text to search in array and recode to 1
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(MI_t, useNA="ifany")
 
@@ -427,7 +427,7 @@ table(MI, useNA="ifany")
 angina_t <- text_recode(var1= "f.6150.0.0", #first var in range
                         var2 = "f.6150.2.3",#second var in range
                         text = "Angina", #Text to search in array and recode to 1
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(angina_t, useNA="ifany")
 
@@ -451,7 +451,7 @@ table(angina, useNA="ifany")
 ```{r}
 
 stroke_t <- text_recode(var1= "f.6150.0.0", var2 = "f.6150.2.3",
-                        text = "Stroke", NAvals = "Prefer not to answer") 
+                        text = "Stroke", NAvals = "Prefer not to answer|Do not know") 
 
 table(stroke_t, useNA="ifany")
 
@@ -481,7 +481,7 @@ table(stroke, useNA="ifany")
 HBP_t <- text_recode(var1= "f.6150.0.0", #first var in range
                         var2 = "f.6150.2.3",#second var in range
                         text = "High blood pressure", #Text to search in array and recode to 1
-                        NAvals = "Prefer not to answer") #Text to recode, sep multiple with 
+                        NAvals = "Prefer not to answer|Do not know") #Text to recode, sep multiple with 
 
 table(HBP_t, useNA="ifany")
 
@@ -510,6 +510,7 @@ Coding 'Do not know' as to other serios medical conditions also as 0 - differenc
 RA_n <- num_recode(var1= "f.20002.0.0", #first var in range
                         var2 = "f.20002.3.33",#second var in range
                         code=1464) #Text to search in array and recode to NA)
+
 table(RA_n, useNA="ifany")
 
 #This Q for Other serious medical condition/disability diagnosed by doctor
@@ -571,7 +572,7 @@ table(gout, useNA="ifany")
 
 dental.problems_t <- text_recode(var1= "f.6149.0.0", var2 = "f.6149.3.5",
                         text = "Bleeding gums|Dentures|Loose teeth|Mouth ulcers|Painful gums|Toothache", #Text to search in array and recode to 1
-                        NAvals = "Prefer not to answer") 
+                        NAvals ="Prefer not to answer|Do not know") 
 
 table(dental.problems_t, useNA="ifany")
 
@@ -589,7 +590,7 @@ Deviating from DW to code 'Do not know' as 0
 ```{r}
 chest.pain_t <- text_recode(var1= "f.2335.0.0", var2 = "f.2335.3.0",
                         text = "Yes",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(chest.pain_t, useNA="ifany")
 
@@ -620,7 +621,7 @@ table(sciatica, useNA="ifany")
 
 ```{r}
 diabetes_t <- text_recode(var1= "f.2443.0.0", var2 = "f.2443.3.0",
-                        text = "Yes", NAvals = "Prefer not to answer") 
+                        text = "Yes", NAvals = "Prefer not to answer|Do not know") 
 
 table(diabetes_t, useNA="ifany")
 
@@ -647,7 +648,7 @@ table(diabetes, useNA="ifany")
 ```{r}
 
 cancer_t  <- text_recode(var1= "f.2453.0.0", var2 = "f.2453.3.0",
-                        text = "Yes", NAvals = "Prefer not to answer") 
+                        text = "Yes", NAvals = "Prefer not to answer|Do not know") 
 
 table(cancer_t, useNA="ifany")
 
@@ -689,7 +690,7 @@ Again 'Do not know' coded as zero
 
 fractures_t <- text_recode(var1= "f.2463.0.0", var2 = "f.2463.3.0",
                         text = "Yes",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(fractures_t, useNA="ifany")
 
@@ -706,7 +707,7 @@ table(fractures, useNA="ifany")
 ```{r warning = F}
 
 dvt_t <- text_recode(var1= "f.6152.0.0", var2 = "f.6152.3.4",
-                        text = "DVT", NAvals = "Prefer not to answer") 
+                        text = "DVT", NAvals = "Prefer not to answer|Do not know") 
 
 table(dvt_t, useNA="ifany")
 
@@ -729,7 +730,7 @@ table(dvt, useNA="ifany")
 ```{r}
 #emphysema is the same variable as CD 
 emphysema_t <- text_recode(var1= "f.6152.0.0", var2 = "f.6152.3.4",
-                        text = "Emphysema", NAvals = "Prefer not to answer") 
+                        text = "Emphysema", NAvals = "Prefer not to answer|Do not know") 
 
 table(emphysema_t, useNA="ifany")
 
@@ -750,7 +751,7 @@ table(emphysema, useNA="ifany")
 ```{r}
 
 asthma_t <- text_recode(var1= "f.6152.0.0", var2 = "f.6152.3.4",
-                        text = "Asthma", NAvals = "Prefer not to answer") 
+                        text = "Asthma", NAvals = "Prefer not to answer|Do not know") 
 
 table(asthma_t, useNA="ifany")
 
@@ -775,7 +776,7 @@ Coded to include eczema and hayfever/rhinitis
 
 #grepl will pick up Hayfever, allergic rhinitis or eczema
 allergies_t <- text_recode(var1= "f.6152.0.0", var2 = "f.6152.3.4",
-                        text = "Hayfever", NAvals = "Prefer not to answer") 
+                        text = "Hayfever", NAvals = "Prefer not to answer|Do not know") 
 
 table(allergies_t, useNA="ifany")
 
@@ -856,7 +857,7 @@ Deviating from method to code 'Do not know' as 0
 
 anxiousness_t <- text_recode(var1= "f.1970.0.0", var2 = "f.1970.3.0",
                         text = "Yes",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(anxiousness_t, useNA="ifany")
 
@@ -892,7 +893,7 @@ table(severe.anxiety, useNA="ifany")
 
 misery_t <- text_recode(var1= "f.1930.0.0", var2 = "f.1930.3.0",
                         text = "Yes",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(misery_t, useNA="ifany")
 
@@ -907,7 +908,7 @@ table(misery, useNA="ifany")
 
 loneliness_t <- text_recode(var1= "f.2020.0.0", var2 = "f.2020.3.0",
                         text = "Yes",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(loneliness_t, useNA="ifany")
 
@@ -924,7 +925,7 @@ Assume head pain = headache
 
 head.neck.pain_t <- text_recode(var1= "f.6159.0.0", var2 = "f.6159.3.6",
                         text = "Neck or shoulder pain|Headache",
-                        NAvals = "Prefer not to answer" ) 
+                        NAvals = "Prefer not to answer|Do not know" ) 
 
 table(head.neck.pain_t, useNA="ifany")
 
@@ -946,7 +947,7 @@ t <- t[c(1,4,6:9)] #Pull out vars to be coded
 pain.domainsL <- lapply(t, function(t){
   var_t <- text_recode(var1= "f.6159.0.0", var2 = "f.6159.3.6",
                         text = t,
-                        NAvals = "Prefer not to answer" ) 
+                        NAvals = "Prefer not to answer|Do not know" ) 
   
   var <- ifelse(var_t==-99999, NA, var_t)})
 
@@ -970,7 +971,7 @@ var1 = "f.1200.0.0"
   text0 = "Never/rarely"
   text0.5 = "Sometimes"
   text1= "Usually"
-  NAvals = "Prefer not to answer"
+  NAvals = "Prefer not to answer|Do not know"
   
   df.b <- df.a %>% select(var1:var2)
   
@@ -1000,14 +1001,14 @@ table(sleep, useNA="ifany")
 #female var
 high.cholesterol_t1 <- text_recode(var1= "f.6153.0.0", var2 = "f.6153.3.3",
                         text = "Cholesterol",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(high.cholesterol_t1, useNA="ifany")
 
 #male var
 high.cholesterol_t2 <- text_recode(var1= "f.6177.0.0", var2 = "f.6177.3.2",
                         text = "Cholesterol",
-                        NAvals = "Prefer not to answer") 
+                        NAvals = "Prefer not to answer|Do not know") 
 
 table(high.cholesterol_t2, useNA="ifany")
 
@@ -1114,6 +1115,6 @@ ggplot(FI.domains, aes(fi)) + geom_histogram(fill="cornflowerblue") + theme_mini
 ```
 
 ```{r}
-write.csv(FI.domains, "FI.domains.csv", row.names=F)
+write.csv(FI.domains, "FI.domains.DNKasNA.csv", row.names=F)
 
 ```
